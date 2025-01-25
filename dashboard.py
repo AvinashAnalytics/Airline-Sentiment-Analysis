@@ -13,7 +13,7 @@ plt.rcParams['figure.titlesize'] = 16
 
 @st.cache_data
 def load_data():
-    return pd.read_csv("D:\Airline-Sentiment-Analysis\Data\Cleaned_Tweets.csv")
+    return pd.read_csv("Data/Cleaned_Tweets.csv")
 
 df = load_data()
 
