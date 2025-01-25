@@ -49,7 +49,7 @@ st.markdown("""
 
 # ========== Sidebar ==========
 with st.sidebar:
-    st.image("https://avatars.githubusercontent.com/u/158772098?v=4", width=100)
+    st.image("https://avatars.githubusercontent.com/u/86707796?v=4", width=100)
     st.markdown("""
     <div style="margin-top: -15px;">
         <h2 style='color: #1f567d; margin-bottom: 5px;'>Avinash Rai</h2>
@@ -197,11 +197,25 @@ with st.container():
         else:
             st.info("No data for pie chart")
 
-# Word Cloud Section
+# Detailed Analysis
 with st.container():
-    st.markdown("### 🔍 Customer Feedback Analysis")
-    if not filtered_df.empty:
-        with st.spinner('Generating word cloud...'):
+    st.markdown("### 🔍 Deep Dive Analysis")
+    tab1, tab2, tab3 = st.tabs(["Score Distribution", "wordcloud", "Raw Data"])
+    
+    with tab1:
+        if not filtered_df.empty:
+            fig, ax = plt.subplots(figsize=(10,4))
+            sns.histplot(filtered_df['vader_score'], bins=20, kde=True, 
+                        color='#1f567d', ax=ax)
+            ax.set_title('Sentiment Score Distribution')
+            ax.set_xlabel('VADER Sentiment Score')
+            ax.set_facecolor('#f8fafc')
+            st.pyplot(fig)
+
+    
+    with tab2:
+        if not filtered_df.empty:
+            st.markdown("**Frequent Feedback Terms**")
             wc = WordCloud(
                 width=800,
                 height=400,
@@ -214,8 +228,29 @@ with st.container():
             ax.imshow(wc, interpolation='bilinear')
             ax.axis('off')
             st.pyplot(fig)
-    else:
-        st.info("No data available for word cloud")
+    
+    with tab3:
+        if not filtered_df.empty:
+            st.dataframe(
+                filtered_df[['clean_text', 'airline_sentiment', 'vader_score']],
+                column_config={
+                    "text": "Customer Feedback",
+                    "airline_sentiment": st.column_config.TextColumn(
+                        "Sentiment Category",
+                        help="Classified sentiment of the feedback"
+                    ),
+                    "vader_score": st.column_config.ProgressColumn(
+                        "Sentiment Intensity",
+                        help="VADER sentiment score (-1 to 1)",
+                        format="%.2f",
+                        min_value=-1,
+                        max_value=1
+                    )
+                },
+                hide_index=True,
+                use_container_width=True
+            )
+
 
 # Footer
 st.markdown("---")
